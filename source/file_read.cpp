@@ -14,7 +14,6 @@
 #include <fstream>      // ifstream
 #include <sstream>
 #include <vector>
-#include <map>
 
 #include "file_read.h"
 
@@ -26,6 +25,7 @@ using std::ifstream;
 using std::istringstream;
 using std::ostringstream;
 using std::string;
+using std::vector;
 //-----------------------------------------------------------
 
 //-----------------------------------------------------------
@@ -34,7 +34,7 @@ void openFile(ifstream& ifs, const string& fName) {
 
     // File may not exist where you expect, or another problem 
     if (!ifs.is_open()) {
-        std::cout << "Could not open " << fName << "\n";
+        cout << "Could not open " << fName << "\n";
         exit(FILE_OPEN_ERROR);
     }
 
@@ -58,37 +58,46 @@ bool getFLine(ifstream& ifs, string& data) {
     return true;
 }
 
-//-----------------------------------------------------------
+//--------------------------------------------------------------------
+// author: https://www.delftstack.com/howto/cpp/read-csv-file-in-cpp/
+//--------------------------------------------------------------------
 string readFileIntoString(const string& fName) {
     auto ss = ostringstream{};
-    ifstream input_file(fName);
+    ifstream fileIn(fName);
 
-    if (!input_file.is_open()) {
+    if (!fileIn.is_open()) {
         cerr << "Could not open the file - '"
             << fName << "'" << endl;
         exit(EXIT_FAILURE);
     }
-    ss << input_file.rdbuf();
+    ss << fileIn.rdbuf();
+    fileIn.close();
+
     return ss.str();
 }
 
 //-----------------------------------------------------------
-void readCSV(const std::string& fName, std::map<int, std::vector<std::string>>& csv_contents) {
+// author: https://cppbyexample.com/parse_csv.html
+// 
+// reads csv file contents into a vector of string vectors
+// each string vector corresponds to one csv record
+//-----------------------------------------------------------
+void readCSV(const string& fName, vector<vector<string>>& csv_contents) {
     string file_contents = readFileIntoString(fName);
     char delimiter = ',';
 
-    std::istringstream sstream(file_contents);
-    std::vector<string> items;
-    std::string record;
+    istringstream sstream(file_contents);
+    vector<string> items;
+    string record;
 
     int counter = 0;
-    while (std::getline(sstream, record)) {
-        std::istringstream line(record);
-        while (std::getline(line, record, delimiter)) {
+    while (getline(sstream, record)) {
+        istringstream line(record);
+        while (getline(line, record, delimiter)) {
             items.push_back(record);
         }
 
-        csv_contents[counter] = items;
+        csv_contents.push_back(items);
         items.clear();
         counter += 1;
     }
