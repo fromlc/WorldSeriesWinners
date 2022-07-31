@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------
-// FileReader.cpp
+// file_read.cpp
 //
 // handles file open and read errors without exceptions
 //
@@ -27,6 +27,11 @@ using std::ostringstream;
 using std::string;
 using std::vector;
 //-----------------------------------------------------------
+
+//-----------------------------------------------------------
+// constants
+//-----------------------------------------------------------
+constexpr char DELIMITER = ',';
 
 //-----------------------------------------------------------
 void openFile(ifstream& ifs, const string& fName) {
@@ -84,21 +89,20 @@ string readFileIntoString(const string& fName) {
 //-----------------------------------------------------------
 void readCSV(const string& fName, vector<vector<string>>& csv_contents) {
     string file_contents = readFileIntoString(fName);
-    char delimiter = ',';
-
-    istringstream sstream(file_contents);
-    vector<string> items;
-    string record;
+    istringstream ssfile(file_contents);
+    string line, field;
+    vector<string> record;
 
     int counter = 0;
-    while (getline(sstream, record)) {
-        istringstream line(record);
-        while (getline(line, record, delimiter)) {
-            items.push_back(record);
+    while (getline(ssfile, line)) {
+        istringstream ssline(line);
+        // add each field to vector
+        while (getline(ssline, field, DELIMITER)) {
+            record.push_back(field);
         }
 
-        csv_contents.push_back(items);
-        items.clear();
+        csv_contents.push_back(record);
+        record.clear();
         counter += 1;
     }
 }
