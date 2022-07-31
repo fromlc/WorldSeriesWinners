@@ -15,6 +15,11 @@
 // constants
 //-----------------------------------------------------------
 const string CSV_FILENAME = "ch7_pc16_world_series_winners.csv";
+// name the record fields
+#define YEAR_WON 0
+#define CITY 1
+#define TEAM 2
+
 
 // csv columnms: year, city, team
 constexpr int CSV_COLS = 3;
@@ -59,16 +64,11 @@ int main() {
             continue;
         }
 
-        // record fields
-        string yearWon = sv[0];
-        string city    = sv[1];
-        string name    = sv[2];
-
-        cout << yearWon << ' ' << city << ' ' << name << '\n';
+        cout << sv[YEAR_WON] << ' ' << sv[CITY] << ' ' << sv[TEAM] << '\n';
 
         // add csv record to maps
-        addCSVRecord(name, yearWon, mTeam);
-        addCSVRecord(city, yearWon, mCity);
+        addCSVRecord(sv[TEAM], sv[YEAR_WON], mTeam);
+        addCSVRecord(sv[CITY], sv[YEAR_WON], mCity);
     }
 
     // user input loop
@@ -80,12 +80,15 @@ int main() {
 
         // search team name and city name maps
         if (!findName(userIn, mTeam) && !findName(userIn, mCity))
-            cout << userIn << " didn't win the Series yet.\n\n";
+            if (userIn.compare("q") != 0 && userIn.compare("q") != 0)
+                cout << userIn << " didn't win the Series yet.\n\n";
+            else
+                another = false;
 
-    } while (userIn.compare("q") != 0 && userIn.compare("q") != 0);
+    } while (another);
 
     // keep console window open until user types a key
-    cin.get();
+    // cin.get();
 
     return 0;
 }
